@@ -74,14 +74,14 @@ var require_package = __commonJS({
       author: "Reorx",
       license: "MIT",
       devDependencies: {
-        "@types/node": "^18.11.18",
+        "@types/node": "^24.10.4",
         "@typescript-eslint/eslint-plugin": "^5.49.0",
         "@typescript-eslint/parser": "^5.49.0",
         "builtin-modules": "^3.3.0",
-        esbuild: "0.16.17",
-        obsidian: "^1.1.1",
+        esbuild: "^0.27.2",
+        obsidian: "^1.11.0",
         tslib: "2.5.0",
-        typescript: "4.9.4"
+        typescript: "^5.9.3"
       },
       dependencies: {
         "cash-dom": "^8.1.2"
@@ -103,11 +103,10 @@ var import_obsidian = require("obsidian");
 
 // src/utils.ts
 var DEBUG = false;
-if (DEBUG)
-  console.log("DEBUG is enabled");
+if (DEBUG) console.log("DEBUG is enabled");
 function debugLog(...args) {
   if (DEBUG) {
-    console.log(new Date().toISOString().slice(11, 23), ...args);
+    console.log((/* @__PURE__ */ new Date()).toISOString().slice(11, 23), ...args);
   }
 }
 function createElementTree(rootEl, opts) {
@@ -131,13 +130,10 @@ var path = {
     const newParts = [];
     for (let i = 0, l = parts.length; i < l; i++) {
       const part = parts[i];
-      if (!part || part === ".")
-        continue;
-      else
-        newParts.push(part);
+      if (!part || part === ".") continue;
+      else newParts.push(part);
     }
-    if (parts[0] === "")
-      newParts.unshift("");
+    if (parts[0] === "") newParts.unshift("");
     return newParts.join("/");
   },
   // returns the last part of a path, e.g. 'foo.jpg'
@@ -158,8 +154,7 @@ var sanitizer = {
   },
   delimiter(s) {
     s = this.filename(s);
-    if (!s)
-      s = "-";
+    if (!s) s = "-";
     return s;
   }
 };
@@ -313,8 +308,7 @@ var ImageBatchRenameModal = class extends import_obsidian.Modal {
     const renameTasks = [];
     tbodyEl.empty();
     const fileCache = this.app.metadataCache.getFileCache(this.activeFile);
-    if (!fileCache || !fileCache.embeds)
-      return;
+    if (!fileCache || !fileCache.embeds) return;
     const namePatternRegex = new RegExp(state.namePattern, "g");
     const extPatternRegex = new RegExp(state.extPattern);
     fileCache.embeds.forEach((embed) => {
@@ -325,14 +319,12 @@ var ImageBatchRenameModal = class extends import_obsidian.Modal {
       }
       if (state.extPattern) {
         const m0 = extPatternRegex.exec(file.extension);
-        if (!m0)
-          return;
+        if (!m0) return;
       }
       const stem = file.basename;
       namePatternRegex.lastIndex = 0;
       const m1 = namePatternRegex.exec(stem);
-      if (!m1)
-        return;
+      if (!m1) return;
       let renamedName = file.name;
       if (state.nameReplace) {
         namePatternRegex.lastIndex = 0;
@@ -516,8 +508,7 @@ var ImageBatchConversionModal = class extends import_obsidian.Modal {
     const conversionTasks = [];
     tbodyEl.empty();
     const fileCache = this.app.metadataCache.getFileCache(this.activeFile);
-    if (!fileCache || !fileCache.embeds)
-      return;
+    if (!fileCache || !fileCache.embeds) return;
     const namePatternRegex = new RegExp(state.namePattern, "g");
     const extPatternRegex = new RegExp(state.extPattern);
     const imageExtensionRegex = /jpe?g|png|gif|tiff|webp|avif/i;
@@ -532,14 +523,12 @@ var ImageBatchConversionModal = class extends import_obsidian.Modal {
       }
       if (state.extPattern) {
         const m0 = extPatternRegex.exec(file.extension);
-        if (!m0)
-          return;
+        if (!m0) return;
       }
       const stem = file.basename;
       namePatternRegex.lastIndex = 0;
       const m1 = namePatternRegex.exec(stem);
-      if (!m1)
-        return;
+      if (!m1) return;
       if (file.extension.toLowerCase() === state.targetFormat.toLowerCase()) {
         debugLog("Skipping file already in target format:", file.name);
         return;
@@ -621,16 +610,13 @@ var dateTmplRegex = /{{DATE:([^}]+)}}/gm;
 var frontmatterTmplRegex = /{{frontmatter:([^}]+)}}/gm;
 var replaceDateVar = (s, date) => {
   const m = dateTmplRegex.exec(s);
-  if (!m)
-    return s;
+  if (!m) return s;
   return s.replace(m[0], date.format(m[1]));
 };
 var replaceFrontmatterVar = (s, frontmatter) => {
-  if (!frontmatter)
-    return s;
+  if (!frontmatter) return s;
   const m = frontmatterTmplRegex.exec(s);
-  if (!m)
-    return s;
+  if (!m) return s;
   return s.replace(m[0], frontmatter[m[1]] || "");
 };
 var renderTemplate = (tmpl, data, frontmatter) => {
@@ -683,7 +669,7 @@ var PasteImageRenamePlugin = class extends import_obsidian2.Plugin {
         this.app.vault.on("create", (file) => {
           if (!(file instanceof import_obsidian2.TFile))
             return;
-          const timeGapMs = new Date().getTime() - file.stat.ctime;
+          const timeGapMs = (/* @__PURE__ */ new Date()).getTime() - file.stat.ctime;
           if (timeGapMs > 1e3)
             return;
           if (isMarkdownFile(file))
@@ -928,8 +914,7 @@ var PasteImageRenamePlugin = class extends import_obsidian2.Plugin {
     return __async(this, null, function* () {
       const activeFile = this.getActiveFile();
       const fileCache = this.app.metadataCache.getFileCache(activeFile);
-      if (!fileCache || !fileCache.embeds)
-        return;
+      if (!fileCache || !fileCache.embeds) return;
       const extPatternRegex = /jpe?g|png|gif|tiff|webp|avif/i;
       let convertedCount = 0;
       for (const embed of fileCache.embeds) {
@@ -939,8 +924,7 @@ var PasteImageRenamePlugin = class extends import_obsidian2.Plugin {
           continue;
         }
         const m0 = extPatternRegex.exec(file.extension);
-        if (!m0)
-          continue;
+        if (!m0) continue;
         const optimalFormat = this.getOptimalDefaultFormat(file.extension);
         if (file.extension.toLowerCase() === optimalFormat.toLowerCase()) {
           debugLog("Skipping file already in optimal format:", file.name);
@@ -968,8 +952,7 @@ var PasteImageRenamePlugin = class extends import_obsidian2.Plugin {
     return __async(this, null, function* () {
       const activeFile = this.getActiveFile();
       const fileCache = this.app.metadataCache.getFileCache(activeFile);
-      if (!fileCache || !fileCache.embeds)
-        return;
+      if (!fileCache || !fileCache.embeds) return;
       const extPatternRegex = /jpe?g|png|gif|tiff|webp/i;
       for (const embed of fileCache.embeds) {
         const file = this.app.metadataCache.getFirstLinkpathDest(embed.link, activeFile.path);
@@ -978,8 +961,7 @@ var PasteImageRenamePlugin = class extends import_obsidian2.Plugin {
           return;
         }
         const m0 = extPatternRegex.exec(file.extension);
-        if (!m0)
-          return;
+        if (!m0) return;
         const { newName, isMeaningful } = this.generateNewName(file, activeFile);
         debugLog("generated newName:", newName, isMeaningful);
         if (!isMeaningful) {
@@ -1048,8 +1030,7 @@ var PasteImageRenamePlugin = class extends import_obsidian2.Plugin {
           continue;
         }
         const m = dupNameRegex.exec(sibling);
-        if (!m)
-          continue;
+        if (!m) continue;
         dupNameNumbers.push(parseInt(m.groups.number));
       }
       if (isNewNameExist || this.settings.dupNumberAlways) {
@@ -1079,8 +1060,7 @@ var PasteImageRenamePlugin = class extends import_obsidian2.Plugin {
   }
   updateLinksInActiveFile(originalLinkText, newLinkText) {
     const editor = this.getActiveEditor();
-    if (!editor || originalLinkText === newLinkText)
-      return;
+    if (!editor || originalLinkText === newLinkText) return;
     const content = editor.getValue();
     const escapedOriginal = originalLinkText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const updatedContent = content.replace(new RegExp(escapedOriginal, "g"), newLinkText);
@@ -1094,8 +1074,7 @@ var PasteImageRenamePlugin = class extends import_obsidian2.Plugin {
   }
   testExcludeExtension(file) {
     const pattern = this.settings.excludeExtensionPattern;
-    if (!pattern)
-      return false;
+    if (!pattern) return false;
     return new RegExp(pattern).test(file.extension);
   }
   loadSettings() {
